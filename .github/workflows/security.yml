@@ -1,36 +1,26 @@
+name: Code Scanning
+
 on:
   pull_request
 
-  
-name: Main Workflow
 jobs:
-  sonarqube:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting.
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    # Triggering SonarQube analysis as results of it are required by Quality Gate check.
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-    # Check the Quality Gate status.
-    - name: SonarQube Quality Gate Check
-      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-
-      # Force to fail step after specific time.
-      timeout-minutes: 0
-      env:
-       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
-
-    # Optionally you can use the output from the Quality Gate in another step.
-    # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
-    - name: "Example show SonarQube Quality Gate Status value"
-      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+      - name: SonarQube Scanner
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+           
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
