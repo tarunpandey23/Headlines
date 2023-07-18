@@ -1,8 +1,7 @@
 name: Code Scanning
 
 on:
-  pull_request:
-    types: [pull_request]
+  pull_request
 
 jobs:
   build:
