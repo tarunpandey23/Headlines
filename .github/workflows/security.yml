@@ -18,21 +18,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          extraProperties: |
-            sonar.report.export.path=sonarqube-report.json
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Check SonarQube results
-        run: |
-          if jq -e '.[] | select(.bugs > 0 or .vulnerabilities > 0)' < sonarqube-report.json; then
-            echo "SonarQube found issues, blocking PR creation."
-            exit 1
-          else
-            echo "SonarQube scan successful. PR creation allowed."
-          fi
+    
 
       - name: SonarQube Quality Gate
         uses: sonarsource/sonarqube-quality-gate-action@master
